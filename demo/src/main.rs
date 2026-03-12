@@ -1,4 +1,4 @@
-use zson::{encode_json};
+use zson::{decode_json, encode_json};
 
 #[derive(zson::Encodable)]
 struct User {
@@ -24,7 +24,10 @@ fn main() {
             Pet { name: "Tinker".to_owned(), species: "Cat".to_owned() },
         ],
     };
-
+    
     let json = encode_json(&user);
-    print!("{}", json);
+    println!("{}", json);
+
+    let decoded = decode_json::<Vec<String>>("[\"John\", \"Doe\"]");
+    println!("{:?}", decoded);
 }

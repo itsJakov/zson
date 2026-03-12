@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 itertools = "0.14.0"
+logos = "0.16.1"
 num-traits = "0.2.19"
 snailquote = "0.3.1"
 zson-macros = { path = "../zson-macros" }
