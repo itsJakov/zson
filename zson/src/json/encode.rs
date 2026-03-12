@@ -2,13 +2,9 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use itertools::Itertools;
 use snailquote::escape;
-use crate::{Encodable, Value};
+use crate::Value;
 
-pub fn encode_json<T: Encodable>(value: &T) -> String {
-    encode_value(value.encode()).into_owned()
-}
-
-fn encode_value(value: Value) -> Cow<'static, str> {
+pub fn encode_value(value: Value) -> Cow<'static, str> {
     match value {
         Value::None => Cow::Borrowed("null"),
         Value::Bool(b) => Cow::Borrowed(if b { "true" } else { "false" }),
@@ -39,9 +35,7 @@ fn encode_object(map: HashMap<String, Value>) -> Cow<'static, str> {
 
     let pairs = map
         .into_iter()
-        .map(|(key, value)| {
-            format!("\"{}\" : {}", key, encode_value(value))
-        })
+        .map(|(key, value)| format!("\"{}\" : {}", key, encode_value(value)))
         .join(", ");
 
     Cow::Owned(format!("{{ {} }}", pairs))
