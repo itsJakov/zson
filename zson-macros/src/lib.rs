@@ -19,7 +19,7 @@ pub fn derive_encodable(input: TokenStream) -> TokenStream {
         .map(|field| { field.ident.as_ref().unwrap() })
         .map(|ident| {
             quote! {
-                map.insert(stringify!(#ident), self.#ident.encode());
+                map.insert(stringify!(#ident).to_owned(), self.#ident.encode());
             }
         });
 
@@ -28,7 +28,7 @@ pub fn derive_encodable(input: TokenStream) -> TokenStream {
     quote! {
         impl #impl_generics zson::Encodable #ty_generics for #name #where_clause {
             fn encode(&self) -> zson::Value {
-                let mut map: std::map::collections::HashMap<String, zson::value> = std::collections::HashMap::new();
+                let mut map: std::collections::HashMap<String, zson::Value> = std::collections::HashMap::new();
                 #(#field_decoders;)*
                 return zson::Value::Object(map);
             }
