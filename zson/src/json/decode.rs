@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use crate::json::lexer::{Lexer, Token};
 use crate::{ObjectMap, Value};
 use std::collections::HashMap;
+use snailquote::unescape;
 
 pub fn parse(input: &str) -> Option<Value> {
     let mut lexer = Lexer::new(input);
@@ -14,11 +15,15 @@ fn parse_value(lexer: &mut Lexer) -> Option<Value> {
         Token::False => Some(Value::Bool(false)),
         Token::True => Some(Value::Bool(true)),
         Token::Number => lexer.slice().parse::<i64>().ok().map(Value::Number),
-        Token::String => Some(Value::String(lexer.slice().to_owned())),
+        Token::String => parse_string(lexer).map(Value::String),
         Token::ArrayOpen => parse_array(lexer).map(Value::Array),
         Token::ObjectOpen => parse_object(lexer).map(Value::Object),
         _ => None // Unexpected or missing token
     }
+}
+
+fn parse_string(lexer: &mut Lexer) -> Option<String> {
+    unescape(lexer.slice()).ok()
 }
 
 fn parse_array(lexer: &mut Lexer) -> Option<Vec<Value>> {
