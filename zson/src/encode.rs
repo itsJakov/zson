@@ -4,6 +4,12 @@ pub trait Encodable {
     fn encode(&self) -> Value;
 }
 
+impl Encodable for Value {
+    fn encode(&self) -> Value {
+        self.clone()
+    }
+}
+
 impl Encodable for bool {
     fn encode(&self) -> Value {
         Value::Bool(*self)

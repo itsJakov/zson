@@ -4,6 +4,12 @@ pub trait Decodable: Sized {
     fn decode(value: Value) -> Option<Self>;
 }
 
+impl Decodable for Value {
+    fn decode(value: Value) -> Option<Self> {
+        Some(value)
+    }
+}
+
 impl Decodable for bool {
     fn decode(value: Value) -> Option<Self> {
         match value {

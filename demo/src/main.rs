@@ -30,4 +30,14 @@ fn main() {
 
     let decoded = decode_json::<Vec<String>>("[\"John\", \"Doe\"]");
     println!("{:?}", decoded);
+
+    let mixed_content = vec![
+        zson::Value::String("Mixed".to_owned()),
+        zson::Value::Number(123),
+        zson::Value::String("Types".to_owned()),
+        zson::Value::None,
+    ];
+    let mixed_content_json = encode_json(&mixed_content);
+    let mixed_content_decoded = decode_json::<Vec<zson::Value>>(&mixed_content_json);
+    println!("{:#?}", mixed_content_decoded);
 }

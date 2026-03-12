@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub type ObjectMap = HashMap<Cow<'static, str>, Value>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Value {
     None,
     Bool(bool),
