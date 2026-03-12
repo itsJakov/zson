@@ -6,29 +6,30 @@ use quote::quote;
 pub fn derive_encodable(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
-    let fields = match input.data {
-        Data::Struct(s) => match s.fields {
-            Fields::Named(f) => f.named,
-            _ => panic!("Only named fields are supported"),
-        }
-        _ => panic!("Only structs are supported"),
+    let Data::Struct(struct_data) = input.data else {
+        panic!("Only structs are supported");
     };
 
-    let decode_stmt = fields.iter().map(|field| {
-        let field = field.ident.as_ref().unwrap();
-        let field_name = field.to_string();
-        quote! {
-            map.insert(#field_name.to_owned(), self.#field.encode());
-        }
-    });
+    let Fields::Named(fields) = struct_data.fields else {
+        panic!("Only named fields are supported");
+    };
+
+    let field_decoders = fields.named
+        .iter()
+        .map(|field| { field.ident.as_ref().unwrap() })
+        .map(|ident| {
+            quote! {
+                map.insert(stringify!(#ident), self.#ident.encode());
+            }
+        });
 
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
     quote! {
         impl #impl_generics zson::Encodable #ty_generics for #name #where_clause {
             fn encode(&self) -> zson::Value {
-                let mut map: HashMap<String, zson::Value> = std::collections::HashMap::new();
-                #(#decode_stmt;)*
+                let mut map: std::map::collections::HashMap<String, zson::value> = std::collections::HashMap::new();
+                #(#field_decoders;)*
                 return zson::Value::Object(map);
             }
         }
