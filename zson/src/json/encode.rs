@@ -1,8 +1,7 @@
-use std::borrow::Cow;
-use std::collections::HashMap;
+use crate::{ObjectMap, Value};
 use itertools::Itertools;
 use snailquote::escape;
-use crate::Value;
+use std::borrow::Cow;
 
 pub fn encode_value(value: Value) -> Cow<'static, str> {
     match value {
@@ -28,7 +27,7 @@ fn encode_array(vec: Vec<Value>) -> Cow<'static, str> {
     Cow::Owned(format!("[{}]", values))
 }
 
-fn encode_object(map: HashMap<String, Value>) -> Cow<'static, str> {
+fn encode_object(map: ObjectMap) -> Cow<'static, str> {
     if map.is_empty() {
         return Cow::Borrowed("{}");
     }

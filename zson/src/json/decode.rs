@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use crate::json::lexer::{Lexer, Token};
 use crate::Value;
+use std::collections::HashMap;
 
 pub fn parse(input: &str) -> Option<Value> {
     let mut lexer = Lexer::new(input);

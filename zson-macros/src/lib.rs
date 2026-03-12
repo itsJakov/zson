@@ -1,6 +1,6 @@
-use proc_macro::{TokenStream};
-use syn::{parse_macro_input, Data, DeriveInput, Fields};
+use proc_macro::TokenStream;
 use quote::quote;
+use syn::{parse_macro_input, Data, DeriveInput, Fields};
 
 #[proc_macro_derive(Encodable)]
 pub fn derive_encodable(input: TokenStream) -> TokenStream {
@@ -19,7 +19,7 @@ pub fn derive_encodable(input: TokenStream) -> TokenStream {
         .map(|field| { field.ident.as_ref().unwrap() })
         .map(|ident| {
             quote! {
-                map.insert(stringify!(#ident).to_owned(), self.#ident.encode());
+                map.insert(stringify!(#ident).into(), self.#ident.encode());
             }
         });
 
@@ -28,7 +28,7 @@ pub fn derive_encodable(input: TokenStream) -> TokenStream {
     quote! {
         impl #impl_generics zson::Encodable #ty_generics for #name #where_clause {
             fn encode(&self) -> zson::Value {
-                let mut map: std::collections::HashMap<String, zson::Value> = std::collections::HashMap::new();
+                let mut map = zson::ObjectMap::new();
                 #(#field_decoders;)*
                 return zson::Value::Object(map);
             }
