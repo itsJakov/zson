@@ -1,5 +1,6 @@
+use std::borrow::Cow;
 use crate::json::lexer::{Lexer, Token};
-use crate::Value;
+use crate::{ObjectMap, Value};
 use std::collections::HashMap;
 
 pub fn parse(input: &str) -> Option<Value> {
@@ -15,12 +16,13 @@ fn parse_value(lexer: &mut Lexer) -> Option<Value> {
         Token::Number => lexer.slice().parse::<i64>().ok().map(Value::Number),
         Token::String => Some(Value::String(lexer.slice().to_owned())),
         Token::ArrayOpen => parse_array(lexer).map(Value::Array),
+        Token::ObjectOpen => parse_object(lexer).map(Value::Object),
         _ => None // Unexpected or missing token
     }
 }
 
 fn parse_array(lexer: &mut Lexer) -> Option<Vec<Value>> {
-    if let Token::ArrayClose = lexer.peak()? {
+    if let Token::ArrayClose = lexer.peek()? {
         lexer.advance();
         return Some(Vec::new())
     }
@@ -41,15 +43,35 @@ fn parse_array(lexer: &mut Lexer) -> Option<Vec<Value>> {
     Some(array)
 }
 
-fn parse_object(lexer: &mut Lexer) -> Option<HashMap<String, Value>> {
-    if let Token::ObjectClose = lexer.peak()? {
+fn parse_object(lexer: &mut Lexer) -> Option<ObjectMap> {
+    if let Token::ObjectClose = lexer.peek()? {
         lexer.advance();
         return Some(HashMap::new());
     }
 
-    let mut object: HashMap<String, Value> = HashMap::new();
+    let mut object = ObjectMap::new();
 
-    // TODO: Implement object parsing
+    loop {
+        let key = parse_value(lexer)?;
+        let Value::String(key) = key else {
+            // Object keys must be strings
+            return None;
+        };
+
+        let Token::Colon = lexer.advance()? else {
+            // Expected colon after key
+            return None;
+        };
+
+        let value = parse_value(lexer)?;
+        object.insert(Cow::Owned(key), value);
+
+        match lexer.advance()? {
+            Token::Comma => continue,
+            Token::ObjectClose => break,
+            _ => return None // Expected comma or object close
+        }
+    }
 
     Some(object)
 }

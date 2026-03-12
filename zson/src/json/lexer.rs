@@ -39,14 +39,14 @@ pub enum Token {
 
 pub struct Lexer<'source> {
     logos: logos::Lexer<'source, Token>,
-    peaked: Option<Token>,
+    peeked: Option<Token>,
 }
 
 impl Lexer<'_> {
     pub fn new(input: &'_ str) -> Lexer<'_> {
         Lexer {
             logos: Token::lexer(input),
-            peaked: None,
+            peeked: None,
         }
     }
 
@@ -55,16 +55,16 @@ impl Lexer<'_> {
     }
 
     pub fn advance(&mut self) -> Option<Token> {
-        if let Some(peaked) = self.peaked.take() {
+        if let Some(peaked) = self.peeked.take() {
             return Some(peaked);
         }
         self.logos.next()?.ok()
     }
 
-    pub fn peak(&mut self) -> Option<&Token> {
-        if self.peaked.is_none() {
-            self.peaked = self.logos.next()?.ok();
+    pub fn peek(&mut self) -> Option<&Token> {
+        if self.peeked.is_none() {
+            self.peeked = self.logos.next()?.ok();
         }
-        self.peaked.as_ref()
+        self.peeked.as_ref()
     }
 }

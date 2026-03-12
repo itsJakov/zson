@@ -24,12 +24,17 @@ fn main() {
             Pet { name: "Tinker".to_owned(), species: "Cat".to_owned() },
         ],
     };
-    
+
     let json = encode_json(&user);
     println!("{}", json);
 
-    let decoded = decode_json::<Vec<String>>("[\"John\", \"Doe\"]");
-    println!("{:?}", decoded);
+    let decoded = decode_json::<zson::Value>("{\
+        \"first_name\": \"John Doe\",
+        \"last_name\": null,\
+        \"age\": 25,
+        \"pets\": []\
+    }");
+    println!("{:#?}", decoded);
 
     let mixed_content = vec![
         zson::Value::String("Mixed".to_owned()),
