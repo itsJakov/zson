@@ -25,8 +25,8 @@ fn main() {
         ],
     };
 
-    let json = encode_json(&user);
-    println!("{}", json);
+    let cbor = encode_cbor(&zson::Value::None);
+    println!("{}", cbor_as_string(&cbor));
 
     let decoded = decode_json::<User>("{\
         \"first_name\": \"John Doe\",

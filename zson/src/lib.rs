@@ -12,6 +12,9 @@ pub use decode::*;
 mod json;
 pub use json::*;
 
+mod cbor;
+pub use cbor::*;
+
 // pub fn add(left: u64, right: u64) -> u64 {
 //     left + right
 // }
