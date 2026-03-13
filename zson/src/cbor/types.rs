@@ -10,3 +10,8 @@ pub enum MajorType {
     Primitive = 7 << 5,
 }
 
+pub const U8_ARG: u8 = 24;
+pub const U16_ARG: u8 = 25;
+pub const U32_ARG: u8 = 26;
+pub const U64_ARG: u8 = 27;
+pub const INDEFINITE_ARG: u8 = 28;
