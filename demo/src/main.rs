@@ -1,6 +1,6 @@
 use zson::{decode_json, encode_json};
 
-#[derive(zson::Encodable)]
+#[derive(Debug, zson::Encodable, zson::Decodable)]
 struct User {
     first_name: String,
     last_name: Option<String>,
@@ -8,7 +8,7 @@ struct User {
     pets: Vec<Pet>,
 }
 
-#[derive(zson::Encodable)]
+#[derive(Debug, zson::Encodable, zson::Decodable)]
 struct Pet {
     name: String,
     species: String,
@@ -28,11 +28,11 @@ fn main() {
     let json = encode_json(&user);
     println!("{}", json);
 
-    let decoded = decode_json::<zson::Value>("{\
+    let decoded = decode_json::<User>("{\
         \"first_name\": \"John Doe\",
         \"last_name\": null,\
         \"age\": 25,
-        \"pets\": []\
+        \"pets\": [{ \"name\": \"Woof\", \"species\": \"Dog\" }]
     }");
     println!("{:#?}", decoded);
 

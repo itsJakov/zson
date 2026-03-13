@@ -1,8 +1,8 @@
-use std::borrow::Cow;
 use crate::json::lexer::{Lexer, Token};
 use crate::{ObjectMap, Value};
-use std::collections::HashMap;
 use snailquote::unescape;
+use std::borrow::Cow;
+use std::collections::HashMap;
 
 pub fn parse(input: &str) -> Option<Value> {
     let mut lexer = Lexer::new(input);

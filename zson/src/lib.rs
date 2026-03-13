@@ -1,4 +1,4 @@
-pub use zson_macros::Encodable;
+pub use zson_macros::{Decodable, Encodable};
 
 mod value;
 pub use value::*;
