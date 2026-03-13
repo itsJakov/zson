@@ -15,5 +15,5 @@ pub fn encode_cbor<T: Encodable>(value: &T) -> Vec<u8> {
 pub fn cbor_as_string(buffer: &[u8]) -> String {
     buffer.iter()
         .map(|&b| format!("{b:02X}"))
-        .join(", ")
+        .join(" ")
 }

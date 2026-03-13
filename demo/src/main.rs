@@ -25,7 +25,7 @@ fn main() {
         ],
     };
 
-    let cbor = encode_cbor(&zson::Value::None);
+    let cbor = encode_cbor(&zson::Value::Number(24));
     println!("{}", cbor_as_string(&cbor));
 
     let decoded = decode_json::<User>("{\
