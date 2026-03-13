@@ -53,7 +53,7 @@ pub fn derive_decodable(input: TokenStream) -> TokenStream {
         .map(|field| { field.ident.as_ref().unwrap() })
         .map(|ident| {
             quote! {
-                #ident: zson::MapDecodable::decode_from_map(&mut map, stringify!(#ident))?
+                #ident: zson::Decodable::decode_from_object(&mut map, stringify!(#ident))?
             }
         });
 
