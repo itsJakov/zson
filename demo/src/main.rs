@@ -5,7 +5,7 @@ struct User {
     first_name: String,
     last_name: Option<String>,
     age: i64,
-    // pets: Vec<Pet>,
+    pets: Vec<Pet>,
 }
 
 #[derive(Debug, zson::Encodable, zson::Decodable)]
@@ -19,10 +19,10 @@ fn main() {
         first_name: "John Doe".to_owned(),
         last_name: None,
         age: 25,
-        // pets: vec![
-        //     Pet { name: "Dopey".to_owned(), species: "Cat".to_owned() },
-        //     Pet { name: "Tinker".to_owned(), species: "Cat".to_owned() },
-        // ],
+        pets: vec![
+            Pet { name: "Dopey".to_owned(), species: "Cat".to_owned() },
+            Pet { name: "Tinker".to_owned(), species: "Cat".to_owned() },
+        ],
     };
 
     let cbor = encode_cbor(&user);

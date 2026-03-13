@@ -22,8 +22,8 @@ pub fn encode_value(buffer: &mut Vec<u8>, value: Value) {
         Value::Bool(b) => encode_bool(buffer, b),
         Value::Number(n) => encode_number(buffer, n),
         Value::String(s) => encode_string(buffer, s),
+        Value::Array(vec) => encode_array(buffer, vec),
         Value::Object(map) => encode_object(buffer, map),
-        _ => {}
     }
 }
 
@@ -48,6 +48,13 @@ fn encode_string(buffer: &mut Vec<u8>, value: String) {
     emit_type_len(buffer, MajorType::TextStr, value.len() as u64);
     for byte in value.as_bytes() {
         buffer.push(*byte);
+    }
+}
+
+fn encode_array(buffer: &mut Vec<u8>, array: Vec<Value>) {
+    emit_type_len(buffer, MajorType::Array, array.len() as u64);
+    for value in array {
+        encode_value(buffer, value);
     }
 }
 
