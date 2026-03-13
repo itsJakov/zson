@@ -1,4 +1,4 @@
-use crate::{Value};
+use crate::{ObjectMap, Value};
 use crate::cbor::types::{MajorType, U8_ARG};
 
 fn emit_type(buffer: &mut Vec<u8>, major: MajorType, argument: u8) {
@@ -22,6 +22,7 @@ pub fn encode_value(buffer: &mut Vec<u8>, value: Value) {
         Value::Bool(b) => encode_bool(buffer, b),
         Value::Number(n) => encode_number(buffer, n),
         Value::String(s) => encode_string(buffer, s),
+        Value::Object(map) => encode_object(buffer, map),
         _ => {}
     }
 }
@@ -49,4 +50,11 @@ fn encode_string(buffer: &mut Vec<u8>, value: String) {
         buffer.push(*byte);
     }
 }
+
+fn encode_object(buffer: &mut Vec<u8>, map: ObjectMap) {
+    emit_type_len(buffer, MajorType::Map, map.len() as u64);
+    for (key, value) in map {
+        encode_string(buffer, key.into_owned());
+        encode_value(buffer, value);
+    }
 }
