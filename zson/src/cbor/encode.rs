@@ -4,9 +4,18 @@ use crate::cbor::types::MajorType;
 pub fn encode_value(buffer: &mut Vec<u8>, value: Value) {
     match value {
         Value::None => buffer.push(MajorType::Primitive as u8 | 22),
+        Value::Bool(b) => encode_bool(buffer, b),
         Value::Number(n) => encode_number(buffer, n),
         _ => {}
     }
+}
+
+fn encode_bool(buffer: &mut Vec<u8>, value: bool) {
+    let key = match value {
+        false => 20,
+        true => 21
+    };
+    buffer.push(MajorType::Primitive as u8 | key);
 }
 
 fn encode_number(buffer: &mut Vec<u8>, value: i64) {
