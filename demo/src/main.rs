@@ -30,7 +30,6 @@ fn main() {
 
     let decoded = decode_json::<User>("{\
         \"first_name\": \"John Doe\",
-        \"last_name\": null,\
         \"age\": 25,
         \"pets\": [{ \"name\": \"Woof\", \"species\": \"Dog\" }]
     }");

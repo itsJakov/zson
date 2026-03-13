@@ -1,7 +1,14 @@
-use crate::Value;
+use crate::{ObjectMap, Value};
 
 pub trait Decodable: Sized {
     fn decode(value: Value) -> Option<Self>;
+}
+
+pub trait MapDecodable: Decodable {
+    fn decode_from_map(map: &mut ObjectMap, key: &str) -> Option<Self> {
+        let value = map.remove(key)?;
+        Self::decode(value)
+    }
 }
 
 impl Decodable for Value {
@@ -9,6 +16,7 @@ impl Decodable for Value {
         Some(value)
     }
 }
+impl MapDecodable for Value {}
 
 impl Decodable for bool {
     fn decode(value: Value) -> Option<Self> {
@@ -18,6 +26,7 @@ impl Decodable for bool {
         }
     }
 }
+impl MapDecodable for bool {}
 
 impl Decodable for i64 {
     fn decode(value: Value) -> Option<Self> {
@@ -27,6 +36,7 @@ impl Decodable for i64 {
         }
     }
 }
+impl MapDecodable for i64 {}
 
 impl Decodable for String {
     fn decode(value: Value) -> Option<Self> {
@@ -36,12 +46,21 @@ impl Decodable for String {
         }
     }
 }
+impl MapDecodable for String {}
 
 impl<T: Decodable> Decodable for Option<T> {
     fn decode(value: Value) -> Option<Self> {
         match value {
             Value::None => Some(None),
             _ => Some(T::decode(value)),
+        }
+    }
+}
+impl<T: Decodable> MapDecodable for Option<T> {
+    fn decode_from_map(map: &mut ObjectMap, key: &str) -> Option<Self> {
+        match map.remove(key) {
+            Some(value) => Self::decode(value),
+            _ => Some(None),
         }
     }
 }
@@ -56,3 +75,4 @@ impl<T: Decodable> Decodable for Vec<T> {
         }
     }
 }
+impl<T: Decodable> MapDecodable for Vec<T> {}

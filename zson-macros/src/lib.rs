@@ -53,10 +53,10 @@ pub fn derive_decodable(input: TokenStream) -> TokenStream {
         .map(|field| { field.ident.as_ref().unwrap() })
         .map(|ident| {
             quote! {
-                #ident: zson::Decodable::decode(map.remove(stringify!(#ident))?)?
+                #ident: zson::MapDecodable::decode_from_map(&mut map, stringify!(#ident))?
             }
         });
-    
+
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
     quote! {
