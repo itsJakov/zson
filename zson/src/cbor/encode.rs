@@ -21,6 +21,7 @@ pub fn encode_value(buffer: &mut Vec<u8>, value: Value) {
         Value::None => emit_type(buffer, MajorType::Primitive, 22),
         Value::Bool(b) => encode_bool(buffer, b),
         Value::Number(n) => encode_number(buffer, n),
+        Value::String(s) => encode_string(buffer, s),
         _ => {}
     }
 }
@@ -40,4 +41,12 @@ fn encode_number(buffer: &mut Vec<u8>, value: i64) {
         let negative = value.abs() - 1;
         emit_type_len(buffer, MajorType::NegativeInt, negative as u64);
     }
+}
+
+fn encode_string(buffer: &mut Vec<u8>, value: String) {
+    emit_type_len(buffer, MajorType::TextStr, value.len() as u64);
+    for byte in value.as_bytes() {
+        buffer.push(*byte);
+    }
+}
 }
