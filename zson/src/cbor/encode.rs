@@ -1,5 +1,5 @@
-use crate::{ObjectMap, Value};
 use crate::cbor::types::{MajorType, U8_ARG};
+use crate::{ObjectMap, Value};
 
 fn emit_type(buffer: &mut Vec<u8>, major: MajorType, argument: u8) {
     buffer.push(major as u8 | argument);

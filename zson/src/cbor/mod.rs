@@ -2,10 +2,10 @@ mod encode;
 mod types;
 mod decode;
 
-use itertools::Itertools;
+use crate::cbor::decode::{decode_value, Cursor};
 use crate::cbor::encode::encode_value;
 use crate::{Decodable, Encodable};
-use crate::cbor::decode::{decode_value, Cursor};
+use itertools::Itertools;
 
 pub fn encode_cbor<T: Encodable>(value: &T) -> Vec<u8> {
     let mut buffer = Vec::new();

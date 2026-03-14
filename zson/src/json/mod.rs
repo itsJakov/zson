@@ -3,14 +3,18 @@ mod decode;
 mod lexer;
 
 use crate::json::decode::parse;
-use crate::Decodable;
-use crate::Encodable;
+use crate::{Coder, Encodable, Decodable};
 use encode::encode_value;
 
-pub fn encode_json<T: Encodable>(value: &T) -> String {
-    encode_value(value.encode()).into_owned()
-}
+pub struct JSON;
+impl Coder for JSON {
+    type Type = str;
 
-pub fn decode_json<T: Decodable>(json: &str) -> Option<T> {
-    T::decode(parse(json)?)
+    fn encode<T: Encodable>(value: &T) -> String {
+        encode_value(value.encode()).into_owned()
+    }
+
+    fn decode<T: Decodable>(value: &str) -> Option<T> {
+        T::decode(parse(&value)?)
+    }
 }

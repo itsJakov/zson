@@ -1,7 +1,6 @@
-use std::borrow::Cow;
-use std::collections::BTreeMap;
-use crate::cbor::types::{MajorType, U8_ARG, U16_ARG, U32_ARG, U64_ARG, INDEFINITE_ARG};
+use crate::cbor::types::{MajorType, INDEFINITE_ARG, U16_ARG, U32_ARG, U64_ARG, U8_ARG};
 use crate::{ObjectMap, Value};
+use std::borrow::Cow;
 
 pub struct Cursor<'a> {
     buffer: &'a [u8],
