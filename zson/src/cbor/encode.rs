@@ -8,7 +8,7 @@ fn emit_type(buffer: &mut Vec<u8>, major: MajorType, argument: u8) {
 fn emit_type_len(buffer: &mut Vec<u8>, major: MajorType, length: u64) {
     if length <= 23 {
         emit_type(buffer, major, length as u8)
-    } else if length < 2_u64.pow(8) {
+    } else if length < u8::MAX as u64 {
         emit_type(buffer, major, U8_ARG);
         buffer.push(length as u8);
     } else {
