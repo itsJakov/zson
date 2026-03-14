@@ -17,6 +17,12 @@ impl<'a> Cursor<'a> {
         byte
     }
 
+    fn get_bytes(&mut self, bytes: usize) -> &'a [u8] {
+        let slice = &self.buffer[self.pos..self.pos + bytes];
+        self.pos += bytes; // TODO: bounds checking pls
+        slice
+    }
+
     fn get_type(&mut self) -> Option<(MajorType, u8)> {
         let byte = self.get_byte();
         let major_type = MajorType::try_from(byte).ok()?;
@@ -40,7 +46,8 @@ pub fn decode_value(cursor: &mut Cursor) -> Option<Value> {
     match cursor.get_type()? {
         (MajorType::UnsignedInt, arg) => decode_unsigned(cursor, arg).map(Value::Number),
         (MajorType::NegativeInt, arg) => decode_negative(cursor, arg).map(Value::Number),
-        _ => todo!()
+        (MajorType::TextStr, arg) => decode_string(cursor, arg).map(Value::String),
+        _ => None // Unsupported major type
     }
 }
 
@@ -52,4 +59,9 @@ fn decode_unsigned(cursor: &mut Cursor, argument: u8) -> Option<i64> {
 fn decode_negative(cursor: &mut Cursor, argument: u8) -> Option<i64> {
     let value = decode_type_len(cursor, argument)? as i64;
     Some(-(value + 1))
+}
+
+fn decode_string(cursor: &mut Cursor, argument: u8) -> Option<String> {
+    let length = decode_type_len(cursor, argument)? as usize;
+    String::from_utf8(cursor.get_bytes(length).to_vec()).ok()
 }
