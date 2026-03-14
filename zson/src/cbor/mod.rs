@@ -15,8 +15,8 @@ pub fn encode_cbor<T: Encodable>(value: &T) -> Vec<u8> {
 
 pub fn decode_cbor<T: Decodable>(buffer: &[u8]) -> Option<T> {
     let mut cursor = Cursor::new(buffer);
-    let value = decode_value(&mut cursor);
-    T::decode(value.unwrap())
+    let value = decode_value(&mut cursor)?;
+    T::decode(value)
 }
 
 pub fn cbor_as_string(buffer: &[u8]) -> String {

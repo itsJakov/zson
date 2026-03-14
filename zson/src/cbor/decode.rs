@@ -39,11 +39,17 @@ fn decode_type_len(cursor: &mut Cursor, argument: u8) -> Option<u64> {
 pub fn decode_value(cursor: &mut Cursor) -> Option<Value> {
     match cursor.get_type()? {
         (MajorType::UnsignedInt, arg) => decode_unsigned(cursor, arg).map(Value::Number),
+        (MajorType::NegativeInt, arg) => decode_negative(cursor, arg).map(Value::Number),
         _ => todo!()
     }
 }
 
 fn decode_unsigned(cursor: &mut Cursor, argument: u8) -> Option<i64> {
-    let value = decode_type_len(cursor, argument)?;
-    Some(value as i64)
+    let value = decode_type_len(cursor, argument)? as i64;
+    Some(value)
+}
+
+fn decode_negative(cursor: &mut Cursor, argument: u8) -> Option<i64> {
+    let value = decode_type_len(cursor, argument)? as i64;
+    Some(-(value + 1))
 }

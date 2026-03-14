@@ -13,7 +13,7 @@ pub enum MajorType {
 impl TryFrom<u8> for MajorType {
     type Error = ();
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value & 0xE0 {
+        match (value & 0xE0) >> 5 {
             0 => Ok(MajorType::UnsignedInt),
             1 => Ok(MajorType::NegativeInt),
             2 => Ok(MajorType::ByteStr),
