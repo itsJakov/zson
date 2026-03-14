@@ -11,29 +11,29 @@ impl<'a> Cursor<'a> {
         Self { buffer, pos: 0 }
     }
 
-    fn get_byte(&mut self) -> u8 {
-        let byte = self.buffer[self.pos];
-        self.pos += 1; // TODO: bounds checking pls
-        byte
+    fn get_byte(&mut self) -> Option<u8> {
+        let byte = self.buffer.get(self.pos)?;
+        self.pos += 1;
+        Some(*byte)
     }
 
-    fn get_bytes(&mut self, bytes: usize) -> &'a [u8] {
-        let slice = &self.buffer[self.pos..self.pos + bytes];
-        self.pos += bytes; // TODO: bounds checking pls
-        slice
+    fn get_bytes(&mut self, bytes: usize) -> Option<Vec<u8>> {
+        let slice = &self.buffer.get(self.pos..self.pos + bytes)?;
+        self.pos += bytes;
+        Some(slice.to_vec())
     }
 
     fn get_type(&mut self) -> Option<(MajorType, u8)> {
-        let byte = self.get_byte();
+        let byte = self.get_byte()?;
         let major_type = MajorType::try_from(byte).ok()?;
-        let argument = byte & 0x1F;
+        let argument = byte & 0x1F; // Bottom 5 bits
         Some((major_type, argument))
     }
 }
 
 fn decode_type_len(cursor: &mut Cursor, argument: u8) -> Option<u64> {
     match argument {
-        U8_ARG => Some(cursor.get_byte() as u64),
+        U8_ARG => Some(cursor.get_byte()? as u64),
         U16_ARG => None,
         U32_ARG => None,
         U64_ARG => None,
@@ -63,5 +63,5 @@ fn decode_negative(cursor: &mut Cursor, argument: u8) -> Option<i64> {
 
 fn decode_string(cursor: &mut Cursor, argument: u8) -> Option<String> {
     let length = decode_type_len(cursor, argument)? as usize;
-    String::from_utf8(cursor.get_bytes(length).to_vec()).ok()
+    String::from_utf8(cursor.get_bytes(length)?).ok()
 }
