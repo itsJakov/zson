@@ -1,4 +1,4 @@
-use zson::{cbor_as_string, encode_cbor, Coder, JSON};
+use zson::{Coder, CBOR, JSON};
 
 #[derive(Debug, zson::Encodable, zson::Decodable)]
 struct User {
@@ -25,15 +25,15 @@ fn main() {
         ],
     };
 
-    let cbor = encode_cbor(&user);
-    println!("{}", cbor_as_string(&cbor));
-    
-    let decoded = JSON::decode::<User>("{\
+    let cbor = CBOR::encode(&user);
+    println!("{}", CBOR::hex_string(cbor));
+
+    let as_cbor = JSON::convert::<CBOR>("{\
         \"first_name\": \"John Doe\",
         \"age\": 25,
         \"pets\": [{ \"name\": \"Woof\", \"species\": \"Dog\" }]
-    }");
-    println!("{:#?}", decoded);
+    }").unwrap();
+    println!("{:#?}", CBOR::hex_string(as_cbor));
 
     let mixed_content = vec![
         zson::Value::String("Mixed".to_owned()),
