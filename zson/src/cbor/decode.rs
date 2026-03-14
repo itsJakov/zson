@@ -51,6 +51,7 @@ pub fn decode_value(cursor: &mut Cursor) -> Option<Value> {
         (MajorType::TextStr, arg) => decode_string(cursor, arg).map(Value::String),
         (MajorType::Array, arg) => decode_array(cursor, arg).map(Value::Array),
         (MajorType::Map, arg) => decode_map(cursor, arg).map(Value::Object),
+        (MajorType::Primitive, arg) => decode_primitive(cursor, arg),
         _ => None // Unsupported major type
     }
 }
@@ -95,4 +96,13 @@ fn decode_map(cursor: &mut Cursor, argument: u8) -> Option<ObjectMap> {
     }
 
     Some(map)
+}
+
+fn decode_primitive(cursor: &mut Cursor, argument: u8) -> Option<Value> {
+    match argument {
+        20 => Some(Value::Bool(false)),
+        21 => Some(Value::Bool(true)),
+        22 => Some(Value::None),
+        _ => None // Unsupported primitive value
+    }
 }
