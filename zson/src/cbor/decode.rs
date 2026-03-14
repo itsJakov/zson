@@ -1,5 +1,7 @@
+use std::borrow::Cow;
+use std::collections::BTreeMap;
 use crate::cbor::types::{MajorType, U8_ARG, U16_ARG, U32_ARG, U64_ARG, INDEFINITE_ARG};
-use crate::Value;
+use crate::{ObjectMap, Value};
 
 pub struct Cursor<'a> {
     buffer: &'a [u8],
@@ -47,6 +49,8 @@ pub fn decode_value(cursor: &mut Cursor) -> Option<Value> {
         (MajorType::UnsignedInt, arg) => decode_unsigned(cursor, arg).map(Value::Number),
         (MajorType::NegativeInt, arg) => decode_negative(cursor, arg).map(Value::Number),
         (MajorType::TextStr, arg) => decode_string(cursor, arg).map(Value::String),
+        (MajorType::Array, arg) => decode_array(cursor, arg).map(Value::Array),
+        (MajorType::Map, arg) => decode_map(cursor, arg).map(Value::Object),
         _ => None // Unsupported major type
     }
 }
@@ -64,4 +68,31 @@ fn decode_negative(cursor: &mut Cursor, argument: u8) -> Option<i64> {
 fn decode_string(cursor: &mut Cursor, argument: u8) -> Option<String> {
     let length = decode_type_len(cursor, argument)? as usize;
     String::from_utf8(cursor.get_bytes(length)?).ok()
+}
+
+fn decode_array(cursor: &mut Cursor, argument: u8) -> Option<Vec<Value>> {
+    let length = decode_type_len(cursor, argument)? as usize;
+
+    let mut array = Vec::with_capacity(length);
+    for _ in 0..length {
+        array.push(decode_value(cursor)?);
+    }
+
+    Some(array)
+}
+
+fn decode_map(cursor: &mut Cursor, argument: u8) -> Option<ObjectMap> {
+    let length = decode_type_len(cursor, argument)? as usize;
+
+    let mut map = ObjectMap::with_capacity(length);
+    for _ in 0..length {
+        let Value::String(key) = decode_value(cursor)? else {
+            // Keys have to be Strings
+            return None;
+        };
+
+        map.insert(Cow::Owned(key), decode_value(cursor)?);
+    }
+
+    Some(map)
 }
